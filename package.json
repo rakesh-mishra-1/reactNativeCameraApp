@@ -20,7 +20,8 @@
     "react-native": "0.69.5",
     "react-native-web": "~0.18.7",
     "tunnel": "^0.0.6",
-    "@expo/ngrok": "^4.1.0"
+    "@expo/ngrok": "^4.1.0",
+    "expo-location": "~14.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

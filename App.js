@@ -99,11 +99,13 @@ import { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import * as Location from "expo-location";
 
 export default function App() {
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
+  const [userLocation, setUserLocation] = useState();
   const [photo, setPhoto] = useState();
 
   useEffect(() => {
@@ -155,10 +157,49 @@ export default function App() {
     );
   }
 
+  let GetCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission not granted",
+        "Allow the app to use location service.",
+        [{ text: "OK" }],
+        { cancelable: false }
+      );
+    }
+
+    let { coords } = await Location.getCurrentPositionAsync();
+
+    if (coords) {
+      const { latitude, longitude } = coords;
+      let response = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+
+      for (let item of response) {
+        let address = `${item.name}, ${item.street}, ${item.postalCode}, ${item.city}`;
+
+        // alert(JSON.stringify(address));
+        setUserLocation(address);
+      }
+    }
+    return (
+      <SafeAreaView style={styles.container}>
+        <View>
+        <Button>`${userLocation}`</Button>
+        </View>
+        <StatusBar style='auto' />
+      </SafeAreaView>
+    );
+  };
+
   return (
     <Camera style={styles.container} ref={cameraRef}>
       <View style={styles.buttonContainer}>
         <Button title="Take Pic" onPress={takePic} />
+        <Button title="Show My loc" onPress={GetCurrentLocation} />
       </View>
       <StatusBar style="auto" />
     </Camera>
